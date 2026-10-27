@@ -9,8 +9,10 @@
   "files": [
     "src",
     "kernel",
+    "gen-kernel.sh",
     "LICENSE",
     "LICENSE-content.md",
+    "PROVENANCE.md",
     "README.md"
   ],
   "engines": {

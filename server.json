@@ -1,0 +1,13 @@
+{
+  "name": "io.github.zaojiaoci/verified-rec",
+  "description": "Hash-chained audit ledger for AI agent work — record, verify and replay what the agent did.",
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registry_type": "npm",
+      "identifier": "verified-rec",
+      "version": "0.1.0",
+      "mcpName": "io.github.zaojiaoci/verified-rec"
+    }
+  ]
+}

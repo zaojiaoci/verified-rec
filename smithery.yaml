@@ -1,0 +1,7 @@
+name: verified-rec
+description: Hash-chained audit ledger for AI agent work — append-only records anyone can verify and replay. Zero dependencies, stdio MCP.
+categories:
+  - tools
+  - productivity
+license: SEE LICENSE IN LICENSE
+repository: https://github.com/zaojiaoci/verified-rec

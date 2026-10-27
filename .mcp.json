@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "verified-rec": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "verified-rec"]
+    }
+  }
+}
