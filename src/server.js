@@ -107,7 +107,28 @@ function rpcError(id, code, message) {
   send({ jsonrpc: '2.0', id, error: { code, message } });
 }
 
+function requireArgs(args, fields) {
+  for (const f of fields) {
+    if (typeof args[f] !== 'string' || !args[f]) {
+      throw new Error(`缺少必填参数「${f}」`);
+    }
+  }
+}
+
 async function callTool(name, args) {
+  switch (name) {
+    case 'ledger_start':
+      requireArgs(args, ['path']);
+      break;
+    case 'ledger_append':
+      requireArgs(args, ['path', 'action']);
+      break;
+    case 'ledger_verify':
+    case 'ledger_replay':
+    case 'game_verify_rec':
+      requireArgs(args, ['path']);
+      break;
+  }
   switch (name) {
     case 'ledger_start':
       return startLedger(args.path, { title: args.title || '', actor: args.actor || 'agent' });

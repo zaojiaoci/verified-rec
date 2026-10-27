@@ -43,6 +43,33 @@ One line, any MCP host:
 Local checkout works the same way (`"command": "node", "args": ["/path/to/verified-rec/src/server.js"]`).
 Node ≥ 18. No build step, no native modules, no network.
 
+## Usage
+
+After installing, just talk to your agent — the tools are named in plain
+language and it will pick them up:
+
+- **"Open a ledger for today's release work."** → `ledger_start` creates
+  `release.vrec` with a genesis entry and returns the first chain head.
+- **"Record what you just did."** (as the agent works) → `ledger_append`
+  adds one step (`action`, optional `actor` / `note`) and returns the new head.
+- **"Verify the ledger."** → `ledger_verify` recomputes the chain and reports
+  `ok` + entry count + head — or the **first broken line number** if anything
+  was edited.
+- **"Show me the ledger."** → `ledger_replay` lists entries in order.
+
+Verifying a game recording (see [Origin](#origin)):
+
+- **"Check this recording: /path/to/play.rec, head 9f3c…"** → `game_verify_rec`
+  replays it and answers one of three ways: `reproduced` (some registered
+  kernel recomputes the head — authentic), `not-reproduced` (none does —
+  tampered or from an unregistered game version), `premise-broken` (the
+  recording's facts match no kernel at all). Without an expected head it just
+  proves the recording is replayable and reports its head.
+
+Tip: after any important `ledger_append`, **publish the chain head** (commit
+message, release note, chat). That is what turns "I didn't edit it" into
+"nobody edited it" — the published head pins the chain retroactively.
+
 ## How verification works
 
 Each entry links to the previous one by hash:
@@ -129,6 +156,24 @@ MCP server，零 npm 依赖，账本是你自己机器上的纯文本文件。
 **安装**：上面那段 JSON 照抄进 MCP 配置（WorkBuddy/CodeBuddy 是
 `~/.codebuddy/.mcp.json`），一行 `npx -y verified-rec`。Node ≥ 18，
 无构建、无原生模块、不碰网络。
+
+**使用**：装完直接跟 Agent 说话就行，工具会被自动挑中：
+
+- **"开一本账记今天的发版工作"** → `ledger_start` 建 `.vrec`，创世环 + 首个链头
+- **"把刚才做的事记上"**（干活途中随时）→ `ledger_append` 记一环，返回新链头
+- **"验一下这本账"** → `ledger_verify` 全量重算：完好报 `ok` + 条数 + 链头，
+  被改过就报**第一个断链行号**
+- **"把账读一遍"** → `ledger_replay` 按序列出
+
+验游戏录像（见出处段）：
+
+- **"验这份录像 /path/to/play.rec，链头 9f3c…"** → `game_verify_rec` 三态回答：
+  **reproduced**（某登记内核复现链头 ⇒ 真实）/ **not-reproduced**（都复现不出
+  ⇒ 篡改或未登记版本）/ **premise-broken**（facts 对不上任何内核）。不给链头
+  则只证明可重放并报出链头。
+
+**用法要点**：重要操作 `ledger_append` 之后，把链头**登记出去**（提交信息 /
+发布记录 / 聊天里贴一下）——这一步才把"我没改过"升级成"谁都没法改"。
 
 **防篡改的诚实边界**：抓得住手改和误改；抓不住「重算整条链并伪造链头」的
 攻击者。解法是会计行最古老的一招——**把链头登记出去**（git 提交 / 公开贴文），
