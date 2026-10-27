@@ -1,0 +1,26 @@
+Copyright 2026 zaojiaoci
+
+This project's code (the ledger, the MCP server, the kernel driver) is
+licensed under the Apache License, Version 2.0:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+--------------------------------------------------------------------------
+IMPORTANT — CONTENT CARVE-OUT:
+
+The game CONTENT compiled into kernel/kernel-asm.js (card texts, four-tier
+prose, the script, ending texts, and their enciphered forms) is NOT covered
+by the Apache license above. All rights reserved. See LICENSE-content.md.
+
+A practical reading of the two halves:
+
+  - the ledger / hash-chain / replay code and this MCP server
+    →  Apache-2.0: learn from it, fork it, ship it.
+  - the story compiled into the kernel artifact (the card pool, the script,
+    the endings)  →  mine. Copying it is copyright infringement, and the
+    golden chain heads make any such copy checkable against the originals.

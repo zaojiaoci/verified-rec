@@ -1,0 +1,36 @@
+{
+  "name": "verified-rec",
+  "version": "0.1.0",
+  "description": "Hash-chained audit ledger for AI agent work — append-only records anyone can verify and replay. Plus a replay-verifier for the game it was extracted from.",
+  "type": "module",
+  "bin": {
+    "verified-rec-mcp": "src/server.js"
+  },
+  "files": [
+    "src",
+    "kernel",
+    "LICENSE",
+    "LICENSE-content.md",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test/verify.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "audit-log",
+    "hash-chain",
+    "tamper-evident",
+    "replay",
+    "provenance",
+    "ai-agents"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zaojiaoci/verified-rec"
+  }
+}
