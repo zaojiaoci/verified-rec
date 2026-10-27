@@ -77,11 +77,23 @@ guard for SQL — the same instinct, three forms: a database guard, a game, a
 work ledger.
 
 `game_verify_rec` keeps that story executable. It replays a `.rec` recording
-through the same deterministic narrative kernel (compiled artifact, see
-LICENSE-content.md) and reports the chain head — the head of the game's own
-hash chain, where `head = H(prev ‖ frame ‖ canonical state)` per frame. Give it
-an `expectedHead` and it becomes an integrity check: any edited input drifts
-the head.
+through the same deterministic narrative kernel (versioned compiled artifacts,
+see LICENSE-content.md and [PROVENANCE.md](PROVENANCE.md)) and reports the
+chain head — the head of the game's own hash chain, where
+`head = H(prev ‖ frame ‖ canonical state)` per frame. Give it an `expectedHead`
+and it becomes an integrity check with three outcomes: **reproduced** (some
+registered kernel version recomputes the head — authentic), **not-reproduced**
+(no registered kernel does — tampered, or from an unregistered game version),
+**premise-broken** (the recording's facts digest matches no kernel at all).
+Kernel upgrades add a new registered version; old recordings keep verifying
+against old kernels — an upgrade never falsifies an honest recording.
+
+The kernel is a compiled artifact, and that is a fair thing to be suspicious
+of in an audit tool. [PROVENANCE.md](PROVENANCE.md) answers it: every kernel
+version ships with its source wasm and SHA-256, is byte-reproducible from it
+via a pinned `wasm2js` command (`./gen-kernel.sh`), and is anchored to the
+game's publicly registered golden chain heads — verify it yourself in minutes,
+no trust in the author required.
 
 ## Files
 
@@ -92,9 +104,10 @@ the head.
 
 ## License
 
-Code: Apache-2.0. The narrative content compiled into `kernel/kernel-asm.js`:
-All Rights Reserved (see LICENSE-content.md). The two halves are explained in
-both files — engine is engineering, story is authorship.
+Code: Apache-2.0. The narrative content compiled into `kernel/`
+(`sim-<ver>.wasm` / `kernel-asm-<ver>.js`): All Rights Reserved (see
+LICENSE-content.md). The two halves are explained in both files — engine is
+engineering, story is authorship.
 
 ---
 
@@ -111,7 +124,7 @@ MCP server，零 npm 依赖，账本是你自己机器上的纯文本文件。
 | `ledger_append` | 记一环，返回新链头。链断了先修账才准记 |
 | `ledger_verify` | 全量重算哈希、环环相扣。谁改过文件，报第一个断链行号 |
 | `ledger_replay` | 按序重放（可切片） |
-| `game_verify_rec` | 用确定性叙事内核重放游戏 `.rec`，算出链头（见下） |
+| `game_verify_rec` | 用版本化确定性内核重放游戏 `.rec`，算出链头并给三态判定（见下） |
 
 **安装**：上面那段 JSON 照抄进 MCP 配置（WorkBuddy/CodeBuddy 是
 `~/.codebuddy/.mcp.json`），一行 `npx -y verified-rec`。Node ≥ 18，
@@ -120,6 +133,14 @@ MCP server，零 npm 依赖，账本是你自己机器上的纯文本文件。
 **防篡改的诚实边界**：抓得住手改和误改；抓不住「重算整条链并伪造链头」的
 攻击者。解法是会计行最古老的一招——**把链头登记出去**（git 提交 / 公开贴文），
 事后改账就与公开链头对不上。
+
+**内核的出生证明**：`kernel/` 里的编译产物不是黑箱——每个版本带源 wasm
+与 SHA-256，可用 [PROVENANCE.md](PROVENANCE.md) 里钉死的 `wasm2js` 命令
+（`./gen-kernel.sh`）逐字节重建，并用游戏公开登记的黄金链头锚定内容。
+`game_verify_rec` 的三态判定：**reproduced**（某登记版本内核复现链头 ⇒
+真实）/ **not-reproduced**（所有登记版本都算不出 ⇒ 篡改或录自未登记版本）/
+**premise-broken**（facts 对不上任何内核）。内核升级是追加新版本，老录像
+永远用老内核验，升级不会冤枉诚实的录像。
 
 **出处**：这套账本是从游戏里提出来的。[《它在维护一场对话》](https://zaojiaoci.itch.io/it-is-maintaining-a-conversation)
 ——一个关于记忆衰减的免费叙事游戏，它把每一帧状态都串成哈希链，每一局都能

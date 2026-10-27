@@ -74,12 +74,13 @@ const TOOLS = [
   {
     name: 'game_verify_rec',
     description:
-      'Replay a game .rec recording through the deterministic narrative kernel and compute its chain head. With expectedHead this is an integrity check (any edited input changes the head); without it, it proves the recording is replayable and reports its head. The kernel is the same engine the recording was made on.',
+      'Replay a game .rec recording through versioned deterministic kernels and compute its chain head. With expectedHead this is an integrity check with three outcomes: "reproduced" (some registered kernel reproduces the head — authentic), "not-reproduced" (no registered kernel does — tampered, or from an unregistered game version), "premise-broken" (facts digest matches no kernel). Without expectedHead it proves the recording is replayable and reports its head plus the kernel version used. Old recordings verify against old kernels — kernel upgrades never falsify them.',
     inputSchema: {
       type: 'object',
       properties: {
         path: { type: 'string', description: '.rec recording file path' },
         expectedHead: { type: 'string', description: 'Optional: the claimed 64-hex chain head to check against' },
+        kernelVersion: { type: 'string', description: 'Optional: verify with one specific registered kernel version (e.g. "0.1"); default tries all' },
       },
       required: ['path'],
     },
@@ -117,7 +118,7 @@ async function callTool(name, args) {
     case 'ledger_replay':
       return replayLedger(args.path, { from: args.from ?? 0, to: args.to ?? Infinity });
     case 'game_verify_rec':
-      return replayRecFile(args.path, { expectedHead: args.expectedHead || null });
+      return replayRecFile(args.path, { expectedHead: args.expectedHead || null, kernelVersion: args.kernelVersion || null });
     default:
       throw new Error(`未知工具：${name}`);
   }

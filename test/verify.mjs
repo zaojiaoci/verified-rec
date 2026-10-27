@@ -124,6 +124,56 @@ try {
 }
 ok(badRec, '⑮ 非录制文件被拒');
 
+// ---------------------------------------------------------------- 三态与内核版本链
+
+import { createHash } from 'node:crypto';
+import { KERNELS } from '../src/game.js';
+const sha256 = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
+const ROOT = new URL('..', import.meta.url).pathname;
+
+rep = await replayRec(sess.text, { expectedHead: sess.head });
+ok(
+  rep.ok && rep.status === 'reproduced' && rep.kernelVersion === '0.1',
+  '⑳ 三态之「reproduced」：期望链头被登记内核 0.1 复现 ⇒ 真实',
+  JSON.stringify(rep),
+);
+
+rep = await replayRec(tampered, { expectedHead: sess.head });
+ok(
+  !rep.ok && rep.status === 'not-reproduced' && rep.kernelVersion !== null,
+  '㉑ 三态之「not-reproduced」：篡改流没有内核算得出 ⇒ 点名篡改',
+  JSON.stringify(rep),
+);
+
+const forged = sess.text.replace(/^facts=.*$/m, 'facts=' + '0'.repeat(64));
+rep = await replayRec(forged);
+ok(
+  !rep.ok && rep.status === 'premise-broken' && /前提不成立/.test(rep.error || ''),
+  '㉒ 三态之「premise-broken」：facts 与所有登记内核都不符',
+  JSON.stringify(rep),
+);
+
+rep = await replayRec(sess.text, { kernelVersion: '0.1' });
+ok(rep.ok && rep.kernelVersion === '0.1', '㉓ 指定内核版本验证通过', JSON.stringify(rep));
+let unknownVer = false;
+try {
+  await replayRec(sess.text, { kernelVersion: '9.9' });
+} catch (e) {
+  unknownVer = /没有登记内核版本/.test(String(e.message));
+}
+ok(unknownVer, '㉔ 未登记的内核版本被拒');
+
+// PROVENANCE 登记哈希 ↔ 实际文件一致（出生证明不许说谎）。
+const prov = readFileSync(join(ROOT, 'PROVENANCE.md'), 'utf8');
+ok(
+  KERNELS.length === 1 && KERNELS[0].version === '0.1',
+  '㉕ 内核注册表含 0.1',
+);
+for (const f of ['kernel/kernel-asm-0.1.js', 'kernel/sim-0.1.wasm']) {
+  const h = sha256(join(ROOT, f));
+  ok(prov.includes(h), `㉖ PROVENANCE 登记了 ${f} 的真实哈希 ${h.slice(0, 16)}…`);
+}
+
 // ---------------------------------------------------------------- MCP 协议面
 
 function mcpSession(calls) {
@@ -170,7 +220,7 @@ const t3 = JSON.parse(byId[3]?.result?.content?.[0]?.text || '{}');
 const t5 = JSON.parse(byId[5]?.result?.content?.[0]?.text || '{}');
 ok(t3.head && t5.ok && t5.entries === 2, '⑱ MCP 三连：start → append → verify', JSON.stringify(t5));
 const t6 = JSON.parse(byId[6]?.result?.content?.[0]?.text || '{}');
-ok(t6.ok && t6.head === sess.head, '⑲ MCP game_verify_rec 完整性校验', JSON.stringify(t6));
+ok(t6.ok && t6.head === sess.head && t6.status === 'reproduced', '⑲ MCP game_verify_rec 完整性校验（三态 reproduced）', JSON.stringify(t6));
 
 rmSync(dir, { recursive: true, force: true });
 console.log(`\nverified-rec 判据：${pass} 通过 / ${fail} 失败`);

@@ -10,8 +10,10 @@
 
 ## 内容（All Rights Reserved，本文件）
 
-`kernel/kernel-asm.js` 是游戏《它在维护一场对话》叙事内核的**编译产物**，
-其中嵌有作者的叙事作品，**不随 Apache-2.0 授权**：
+`kernel/` 下的编译产物是游戏《它在维护一场对话》叙事内核的**版本化留档**
+（`sim-<ver>.wasm` 源 wasm + `kernel-asm-<ver>.js` 转译产物，出生证明与
+重建方法见 PROVENANCE.md），其中嵌有作者的叙事作品，**不随 Apache-2.0
+授权**：
 
 - 卡面文本：60 张卡的 what / how / one_face / why_delete / why_keep
   / fact_conclusion 全部字段

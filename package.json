@@ -28,7 +28,8 @@
     "provenance",
     "ai-agents"
   ],
-  "license": "Apache-2.0",
+  "license": "SEE LICENSE IN LICENSE",
+  "mcpName": "io.github.zaojiaoci/verified-rec",
   "repository": {
     "type": "git",
     "url": "https://github.com/zaojiaoci/verified-rec"
